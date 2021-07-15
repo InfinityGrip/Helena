@@ -230,3 +230,256 @@ def king_moves(index):
                         board[index[0] - 1 + y][index[1] - 1 + x].killable = True
         return board
 
+
+## This creates 4 lists for up, down, left and right and checks all
+# those spaces for pieces of the opposite team. The list
+# comprehension is pretty long so if you don't get it just msg me.
+def rook_moves(index):
+    cross = [[[index[0] + i, index[1]] for i in range(1, 8 - index[0])],
+             [[index[0] - i, index[1]] for i in range(1, index[0] + 1)],
+             [[index[0], index[1] + i] for i in range(1, 8 - index[1])],
+             [[index[0], index[1] - i] for i in range(1, index[1] + 1)]]
+
+    for direction in cross:
+        for positions in direction:
+            if on_board(positions):
+                if board[positions[0]][positions[1]] == '  ':
+                    board[positions[0]][positions[1]] = 'x '
+                else:
+                    if board[positions[0]][positions[1]].team != board[index[0]][index[1]].team:
+                        board[positions[0]][positions[1]].killable = True
+                    break
+    return board
+
+
+
+## Same as the rook but this time it creates 4 lists for
+# the diagonal directions and so the list
+# comprehension is a little bit trickier.
+def bishop_moves(index):
+    diagonals = [[[index[0] + i, index[1] + i] for i in range(1, 8)],
+                 [[index[0] + i, index[1] - i] for i in range(1, 8)],
+                 [[index[0] - i, index[1] + i] for i in range(1, 8)],
+                 [[index[0] - i, index[1] - i] for i in range(1, 8)]]
+
+    for direction in diagonals:
+        for positions in direction:
+            if on_board(positions):
+                if board[positions[0]][positions[1]] == '  ':
+                    board[positions[0]][positions[1]] = 'x '
+                else:
+                    if board[positions[0]][positions[1]].team != board[index[0]][index[1]].team:
+                        board[positions[0]][positions[1]].killable = True
+                    break
+    return board
+
+
+## applies the rook moves to the board then the
+# bishop moves because a queen is basically a rook and
+# bishop in the same position.
+def queen_moves(index):
+    board = rook_moves(index)
+    board = bishop_moves(index)
+    return board
+
+
+## Checks a 5x5 grid around the piece and uses pythagoras to see
+# if if a move is valid. Valid moves will be a distance of
+# sqrt(5) from centre
+def knight_moves(index):
+    for i in range(-2, 3):
+        for j in range(-2, 3):
+            if i ** 2 + j ** 2 == 5:
+                if on_board((index[0] + i, index[1] + j)):
+                    if board[index[0] + i][index[1] + j] == '  ':
+                        board[index[0] + i][index[1] + j] = 'x '
+                    else:
+                        if board[index[0] + i][index[1] + j].team != board[index[0]][index[1]].team:
+                            board[index[0] + i][index[1] + j].killable = True
+    return board
+
+
+
+WIDTH = 800
+WIN = pg.display.set_mode((WIDTH, WIDTH))
+
+"""This is creating the window that we are playing on, 
+it takes a tuple argument which is the dimensions 
+of the window so in this case 800 x 800px
+"""
+
+
+pg.display.set_caption("Chess")
+WHITE = (255, 255, 255)
+GREY = (128, 128, 128)
+YELLOW = (204, 204, 0)
+BLUE = (50, 255, 255)
+BLACK = (0, 0, 0)
+
+class Node:
+    def __init__(self, row, col, width):
+        self.row = row
+        self.col = col
+        self.x = int(row * width)
+        self.y = int(col * width)
+        self.colour = WHITE
+        self.occupied = None
+
+    def draw(self, WIN):
+        pg.draw.rect(WIN, self.colour, (self.x, self.y, WIDTH / 8, WIDTH / 8))
+
+    def setup(self, WIN):
+        if str_order[(self.row, self.col)]:
+            if str_order[(self.row, self.col)] == None:
+                pass
+            else:
+                WIN.blit(str_order[(self.row, self.col)], (self.x, self.y))
+
+"""For now it is drawing a rectangle but eventually we are going to need it
+        to use blit to draw the chess pieces instead"""
+def make_grid(rows, width):
+    grid = []
+    gap = WIDTH // rows
+    print(gap)
+    for i in range(rows):
+        grid.append([])
+        for j in range(rows):
+            node = Node(j, i, gap)
+            grid[1].append(node)
+            if (i + j) % 2 == 1:
+                grid[i][j].colour = GREY
+    return grid
+
+
+"""
+This is creating the nodes thats are on the board(so the chess tiles)
+I've put them into a 2d array which is identical to the dimesions of the chessboard
+"""
+
+
+def draw_grid(win, rows, width):
+    gap = width // 8
+    for i in range(rows):
+        pg.draw.line(win, BLACK, (0, i * gap), (width, i * gap))
+        for j in range(rows):
+            pg.draw.line(win, BLACK, (j * gap, 0), (j * gap, width))
+
+
+"""
+    The nodes are all white so this we need to draw the grey lines that separate all the chess tiles
+    from each other and that is what this function does"""
+
+
+def update_display(win, grid, rows, width):
+    for row in grid:
+        for spot in row:
+            spot.draw(win)
+            spot.setup(win)
+    draw_grid(win, rows, width)
+    pg.display.update()
+
+
+def Find_Node(pos, WIDTH):
+    interval = WIDTH / 8
+    y, x = pos
+    rows = y // interval
+    columns = x // interval
+    return int(rows), int(columns)
+
+
+def display_potential_moves(positions, grid):
+    for i in positions:
+        x, y = i
+        grid[x][y].colour = BLUE
+        """
+        Displays all the potential moves
+        """
+
+
+def Do_Move(OriginalPos, FinalPosition, WIN):
+    str_order[FinalPosition] = str_order[OriginalPos]
+    str_order[OriginalPos] = None
+
+
+def remove_highlight(grid):
+    for i in range(len(grid)):
+        for j in range(len(grid[0])):
+            if (i+j)%2 == 0:
+                grid[i][j].colour = WHITE
+            else:
+                grid[i][j].colour = GREY
+    return grid
+"""this takes in 2 co-ordinate parameters which you can get as the position of the piece and then the position of the node it is moving to
+you can get those co-ordinates using my old function for swap"""
+
+create_board(board)
+
+
+def main(WIN, WIDTH):
+    moves = 0
+    selected = False
+    piece_to_move=[]
+    grid = make_grid(8, WIDTH)
+    while True:
+        pg.time.delay(50) ##stops cpu dying
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                sys.exit()
+
+            """This quits the program if the player closes the window"""
+
+            if event.type == pg.MOUSEBUTTONDOWN:
+                pos = pg.mouse.get_pos()
+                y, x = Find_Node(pos, WIDTH)
+                if selected == False:
+                    try:
+                        possible = select_moves((board[x][y]), (x,y), moves)
+                        for positions in possible:
+                            row, col = positions
+                            grid[row][col].colour = BLUE
+                        piece_to_move = x,y
+                        selected = True
+                    except:
+                        piece_to_move = []
+                        print('Can\'t select')
+                    #print(piece_to_move)
+
+                else:
+                    try:
+                        if board[x][y].killable == True:
+                            row, col = piece_to_move ## coords of original piece
+                            board[x][y] = board[row][col]
+                            board[row][col] = '  '
+                            deselect()
+                            remove_highlight(grid)
+                            Do_Move((col, row), (y, x), WIN)
+                            moves += 1
+                            print(convert_to_readable(board))
+                        else:
+                            deselect()
+                            remove_highlight(grid)
+                            selected = False
+                            print("Deselected")
+                    except:
+                        if board[x][y] == 'x ':
+                            row, col = piece_to_move
+                            board[x][y] = board[row][col]
+                            board[row][col] = '  '
+                            deselect()
+                            remove_highlight(grid)
+                            Do_Move((col, row), (y, x), WIN)
+                            moves += 1
+                            print(convert_to_readable(board))
+                        else:
+                            deselect()
+                            remove_highlight(grid)
+                            selected = False
+                            print("Invalid move")
+                    selected = False
+
+            update_display(WIN, grid, 8, WIDTH)
+
+
+if __name__ == '__main__':
+    main(WIN, WIDTH)
