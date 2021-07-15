@@ -1,5 +1,5 @@
-import pygame
-import time
+import pygame as pg
+import time as T
 import sys
 
 board = [[' ' for i in range(8)] for i in range(8)]
@@ -26,3 +26,49 @@ wq = Piece('w', 'q', 'q_queen.png')# white queen
 bkn = Piece('b', 'kn', 'b_knight.png')# b_knight
 wkn = Piece('w', 'kn', 'w_knight.png')# w_knight
 
+str_order = {(0, 0): pg.image.load(br.image),
+             (1, 0): pg.image.load(bkn.image),
+             (2, 0): pg.image.load(bb.image),
+             (3, 0): pg.image.load(bk.image),
+             (4, 0): pg.image.load(bq.image),
+             (5, 0): pg.image.load(bb.image),
+             (6, 0): pg.image.load(bkn.image),
+             (7, 0): pg.image.load(br.image),
+             (0, 1): pg.image.load(bp.image),
+             (1, 1): pg.image.load(bp.image),
+             (2, 1): pg.image.load(bp.image),
+             (3, 1): pg.image.load(bp.image),
+             (4, 1): pg.image.load(bp.image),
+             (5, 1): pg.image.load(bp.image),
+             (6, 1): pg.image.load(bp.image),
+             (7, 1): pg.image.load(bp.image),
+
+
+
+             (0, 2): None, (1, 2): None, (2, 2): None, (3, 2): None,
+             (4, 2): None, (5, 2): None, (6, 2): None, (7, 2): None,
+             (0, 3): None, (1, 3): None, (2, 3): None, (3, 3): None,
+             (4, 3): None, (5, 3): None, (6, 3): None, (7, 3): None,
+             (0, 4): None, (1, 4): None, (2, 4): None, (3, 4): None,
+             (4, 4): None, (5, 4): None, (6, 4): None, (7, 4): None,
+             (0, 5): None, (1, 5): None, (2, 5): None, (3, 5): None,
+             (4, 5): None, (5, 5): None, (6, 5): None, (7, 5): None,
+
+
+
+             (0, 6): pg.image.load(wp.image),
+             (1, 6): pg.image.load(wp.image),
+             (2, 6): pg.image.load(wp.image),
+             (3, 6): pg.image.load(wp.image),
+             (4, 6): pg.image.load(wp.image),
+             (5, 6): pg.image.load(wp.image),
+             (6, 6): pg.image.load(wp.image),
+             (7, 6): pg.image.load(wp.image),
+             (0, 7): pg.image.load(wr.image),
+             (1, 7): pg.image.load(wkn.image),
+             (2, 7): pg.image.load(wb.image),
+             (3, 7): pg.image.load(wk.image),
+             (4, 7): pg.image.load(wq.image),
+             (5, 7): pg.image.load(wb.image),
+             (6, 7): pg.image.load(wkn.image),
+             (7, 7): pg.image.load(wr.image)}
