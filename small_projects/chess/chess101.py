@@ -71,4 +71,53 @@ str_order = {(0, 0): pg.image.load(br.image),
              (4, 7): pg.image.load(wq.image),
              (5, 7): pg.image.load(wb.image),
              (6, 7): pg.image.load(wkn.image),
-             (7, 7): pg.image.load(wr.image)}
+             (7, 7): pg.image.load(wr.image)}# an extra coma was placed here what is it?
+
+
+def create_board(board):
+    board[0] = [Piece('b', 'r', 'b_rook.png'), Piece('b', 'kn', 'b_knight.png'),
+                Piece('b', 'b', 'b_bishop.png'),\
+                Piece('b', 'q', 'b_queen.png'), Piece('b', 'k', 'b_king'),
+                Piece('b', 'b', 'b_bishop.png').\
+                Piece('b', 'kn', 'b_knight.png'), Piece('b', 'r', 'b_rook.png')]
+    board[7] = [Piece('w', 'r', 'w_rook.png'), Piece('w', 'kn', 'w_knight.png'),
+                Piece('w', 'b', 'w_bishop.png'), \
+                Piece('w', 'q', 'w_queen.png'), Piece('w', 'k', 'w_king'),
+                Piece('w', 'b', 'w_bishop.png'), \
+                Piece('w', 'kn', 'w_knight.png'), Piece('w', 'r', 'w_rook.png')]
+    for i in range(8):
+        board[1][i] = Piece('b', 'p', 'b_pawn.png')
+        board[6][i] = Piece('w', 'p', 'w_pawn.png')
+
+    return board
+
+#checks if the move is within the board
+def on_board(position):
+    if position[0] > -1 and position[1] > -1 and position[0] < 8 and position[1] < 8:
+        return True
+    return False
+
+# return a string that places the rows and columns of the board in a readable manner
+def convert_to_readable(board):
+    output = ''
+    for i in board:
+        for j in i:
+            try:
+                output += j.team + j.type + ', '
+            except:
+                output += j + ', '
+        output += '\n'
+    return output
+
+def deselect():
+    for row in range(len(board)):
+        for column in range(len(board[0])):
+            if board[row][column] == 'x ':
+                board[row][column] = '  '
+            else:
+                try:
+                    board[row][column].killable = False
+                except:
+                    pass
+    return convert_to_readable(board)
+
