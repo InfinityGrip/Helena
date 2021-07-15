@@ -95,7 +95,7 @@ def create_board(board):
 def on_board(position):
     if position[0] > -1 and position[1] > -1 and position[0] < 8 and position[1] < 8:
         return True
-    return False
+    #return False
 
 # return a string that places the rows and columns of the board in a readable manner
 def convert_to_readable(board):
@@ -109,6 +109,8 @@ def convert_to_readable(board):
         output += '\n'
     return output
 
+
+#resets "x's" and killable pieces
 def deselect():
     for row in range(len(board)):
         for column in range(len(board[0])):
@@ -120,4 +122,111 @@ def deselect():
                 except:
                     pass
     return convert_to_readable(board)
+
+# Takes in board as argument then return 2d array containing positions of valid moves
+def highlight(board):
+    highlighted = []
+    for i in range(len(board)):
+        for j in range(len(board[0])):
+            if board[i][j] == 'x ':
+                highlighted.append((i, j))
+            else:
+                try:
+                    if board[i][j].killable:
+                        highlighted.append((i, j))
+                except:
+                    pass
+    return highlighted
+
+
+def check_team(moves, index):
+    row, col = index
+    if moves % 2 == 0:
+        if board[row][col].team == 'w':
+            return True
+    else:
+        if board[row][col].team == 'b':
+            return True
+
+
+## This takes in a piece object and its index then runs then checks where
+# that piece can move using separately defined functions for
+# each type of piece.
+def select_moves(piece, index, moves):
+    if check_team(moves, index):
+        if piece.team == 'p':
+            if piece.team == 'b':
+                return highlight(pawn_moves_b(index))
+            else:
+                return highlight(pawn_moves_w(index))
+        if piece.type == 'k':
+            return highlight(king_moves(index))
+        if piece.type == 'r':
+            return highlight(rook_moves(index))
+        if piece.type == 'b':
+            return highlight(bishop_moves(index))
+        if piece.type == 'q':
+            return highlight(queen_moves(index))
+        if piece.type == 'kn':
+            return highlight(knight_moves(index))
+
+
+## Basically, check black and white pawns separately and checks
+# the square above them. If its free that space gets an "x" and
+# if it is occupied by a piece of the opposite team then that piece
+# becomes killable.
+
+def pawn_moves_b(index):
+    if index[0] == 1:
+        if board[index[0] + 2][index[1]] == '  ' and board[index[0] + 1][index[1]] == '  ':
+            board[index[0] + 2][index[1]] = 'x '
+        bottom3 = [[index[0] + 1, index[1] + i] for i in range(-1, 2)]
+
+        for positions in bottom3:
+            if on_board(positions):
+                if bottom3.index(positions) % 2 == 0:
+                    try:
+                        if board[positions[0]][positions[1]].team != 'b':
+
+                            board[positions[0]][positions[1]].killable = True
+                    except:
+                        pass
+                else:
+                    if board[positions[0]][positions[1]] == '  ':
+                        board[positions[0]][positions[1]] = 'x '
+        return board
+
+def pawn_moves_w(index):
+    if index[0] == 6:
+        if board[index[0] - 2][index[1]] == '  ' and board[index[0] - 1][index[1]] == '  ':
+            board[index[0] - 2][index[1]] = 'x '
+        top3 = [[index[0] - 1, index[1] + i] for i in range(-1, 2)]
+
+        for positions in top3:
+            if on_board(positions):
+                if top3.index(positions) % 2 == 0:
+                    try:
+                        if board[positions[0]][positions[1]].team != 'w':
+                            board[positions[0]][positions[1]].killable = True
+                    except:
+                        pass
+                else:
+                    if board[positions[0]][positions[1]] == '  ':
+                        board[positions[0]][positions[1]] = 'x '
+
+        return board
+
+
+#this just checks a 3x3 tile surounding the king.
+# empty spots get an "x" and pieces of the opposite team become killable.
+def king_moves(index):
+    for y in range(3):
+        for x in range(3):
+            if on_board((index[0] - 1 + y, index[1] - 1 + x)):
+                if board[index[0] - 1 + y][index[1] - 1 + x] == '  ':
+                    board[index[0] - 1 + y][index[1] - 1 + x] = 'x '
+                else:
+                    if board[index[0] - 1 + y][index[1] - 1 + x].team != board[index[0]][index[1]].team:
+                        board[index[0] - 1 + y][index[1] - 1 + x].killable = True
+        return board
 
