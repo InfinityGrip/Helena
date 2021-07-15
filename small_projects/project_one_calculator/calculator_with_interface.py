@@ -2,7 +2,7 @@ from tkinter import *
 
 
 def icalc(source, side):
-    storeObj = Frame(source, borderwidth=4, bd=4, bg="powder blue")
+    storeObj = Frame(source, borderwidth=4, bd=4, bg="black")
     storeObj.pack(side=side, expand=YES, fill=BOTH)
 
     return storeObj
