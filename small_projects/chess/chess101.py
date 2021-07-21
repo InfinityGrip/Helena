@@ -1,30 +1,32 @@
 import pygame as pg
-import time as T
+import time
 import sys
+import image
 
-board = [[' ' for i in range(8)] for i in range(8)]
+board = [['  ' for i in range(8)] for i in range(8)]
 
 
-#class that shows what team a piece is on, and whether it can be killed by a selected piece
+# class that shows what team a piece is on, and whether it can be killed by a selected piece
 class Piece:
-    def __init__(self, team, type, image, killable=False):
+    def __init__(self, team, tipe, image, killabl=False):
         self.team = team
-        self.type = type
-        self.killable = killable
+        self.type = tipe
+        self.killable = killabl
         self.image = image
 
-bp = Piece('b', 'p', 'b_pawn.png')# this is black pawn, the parameters indicate: the team, the type, and the colore
-wp = Piece('w', 'p', 'w_pawn.png')# white pawn
-bk = Piece('b', 'k', 'b_king.png')# Black king
-wk = Piece('w', 'k', 'w_king.png')# white king
-br = Piece('b', 'r', 'b_rook.png')# black rook
-wr = Piece('w', 'r', 'w_rook.png')# White rook
-bb = Piece('b', 'b', 'b_bishop.png')# black bishop
-wb = Piece('w', 'b', 'w_bishop.png')# white bishop
-bq = Piece('b', 'q', 'b_queen.png')# black queen
-wq = Piece('w', 'q', 'q_queen.png')# white queen
-bkn = Piece('b', 'kn', 'b_knight.png')# b_knight
-wkn = Piece('w', 'kn', 'w_knight.png')# w_knight
+
+bp = Piece('b', 'p', 'b_pawn.png')  # this is black pawn, the parameters indicate: the team, the type, and the colore
+wp = Piece('w', 'p', 'w_pawn.png')  # white pawn
+bk = Piece('b', 'k', 'b_king.png')  # Black king
+wk = Piece('w', 'k', 'w_king.png')  # white king
+br = Piece('b', 'r', 'b_rook.png')  # black rook
+wr = Piece('w', 'r', 'w_rook.png')  # White rook
+bb = Piece('b', 'b', 'b_bishop.png')  # black bishop
+wb = Piece('w', 'b', 'w_bishop.png')  # white bishop
+bq = Piece('b', 'q', 'b_queen.png')  # black queen
+wq = Piece('w', 'q', 'q_queen.png')  # white queen
+bkn = Piece('b', 'kn', 'b_knight.png')  # b_knight
+wkn = Piece('w', 'kn', 'w_knight.png')  # w_knight
 
 str_order = {(0, 0): pg.image.load(br.image),
              (1, 0): pg.image.load(bkn.image),
@@ -43,8 +45,6 @@ str_order = {(0, 0): pg.image.load(br.image),
              (6, 1): pg.image.load(bp.image),
              (7, 1): pg.image.load(bp.image),
 
-
-
              (0, 2): None, (1, 2): None, (2, 2): None, (3, 2): None,
              (4, 2): None, (5, 2): None, (6, 2): None, (7, 2): None,
              (0, 3): None, (1, 3): None, (2, 3): None, (3, 3): None,
@@ -53,8 +53,6 @@ str_order = {(0, 0): pg.image.load(br.image),
              (4, 4): None, (5, 4): None, (6, 4): None, (7, 4): None,
              (0, 5): None, (1, 5): None, (2, 5): None, (3, 5): None,
              (4, 5): None, (5, 5): None, (6, 5): None, (7, 5): None,
-
-
 
              (0, 6): pg.image.load(wp.image),
              (1, 6): pg.image.load(wp.image),
@@ -71,19 +69,18 @@ str_order = {(0, 0): pg.image.load(br.image),
              (4, 7): pg.image.load(wq.image),
              (5, 7): pg.image.load(wb.image),
              (6, 7): pg.image.load(wkn.image),
-             (7, 7): pg.image.load(wr.image)}# an extra coma was placed here what is it?
+             (7, 7): pg.image.load(wr.image)}  # an extra coma was placed here what is it?
 
 
 def create_board(board):
     board[0] = [Piece('b', 'r', 'b_rook.png'), Piece('b', 'kn', 'b_knight.png'),
-                Piece('b', 'b', 'b_bishop.png'),\
-                Piece('b', 'q', 'b_queen.png'), Piece('b', 'k', 'b_king'),
-                Piece('b', 'b', 'b_bishop.png').\
+                Piece('b', 'b', 'b_bishop.png'), Piece('b', 'q', 'b_queen.png'),
+                Piece('b', 'k', 'b_king'), Piece('b', 'b', 'b_bishop.png'),
                 Piece('b', 'kn', 'b_knight.png'), Piece('b', 'r', 'b_rook.png')]
+
     board[7] = [Piece('w', 'r', 'w_rook.png'), Piece('w', 'kn', 'w_knight.png'),
-                Piece('w', 'b', 'w_bishop.png'), \
-                Piece('w', 'q', 'w_queen.png'), Piece('w', 'k', 'w_king'),
-                Piece('w', 'b', 'w_bishop.png'), \
+                Piece('w', 'b', 'w_bishop.png'), Piece('w', 'q', 'w_queen.png'),
+                Piece('w', 'k', 'w_king'), Piece('w', 'b', 'w_bishop.png'),
                 Piece('w', 'kn', 'w_knight.png'), Piece('w', 'r', 'w_rook.png')]
     for i in range(8):
         board[1][i] = Piece('b', 'p', 'b_pawn.png')
@@ -91,11 +88,13 @@ def create_board(board):
 
     return board
 
-#checks if the move is within the board
+
+# checks if the move is within the board
 def on_board(position):
     if position[0] > -1 and position[1] > -1 and position[0] < 8 and position[1] < 8:
         return True
-    #return False
+    # return False
+
 
 # return a string that places the rows and columns of the board in a readable manner
 def convert_to_readable(board):
@@ -110,7 +109,7 @@ def convert_to_readable(board):
     return output
 
 
-#resets "x's" and killable pieces
+# resets "x's" and killable pieces
 def deselect():
     for row in range(len(board)):
         for column in range(len(board[0])):
@@ -122,6 +121,7 @@ def deselect():
                 except:
                     pass
     return convert_to_readable(board)
+
 
 # Takes in board as argument then return 2d array containing positions of valid moves
 def highlight(board):
@@ -187,7 +187,6 @@ def pawn_moves_b(index):
                 if bottom3.index(positions) % 2 == 0:
                     try:
                         if board[positions[0]][positions[1]].team != 'b':
-
                             board[positions[0]][positions[1]].killable = True
                     except:
                         pass
@@ -195,6 +194,7 @@ def pawn_moves_b(index):
                     if board[positions[0]][positions[1]] == '  ':
                         board[positions[0]][positions[1]] = 'x '
         return board
+
 
 def pawn_moves_w(index):
     if index[0] == 6:
@@ -217,7 +217,7 @@ def pawn_moves_w(index):
         return board
 
 
-#this just checks a 3x3 tile surounding the king.
+# this just checks a 3x3 tile surounding the king.
 # empty spots get an "x" and pieces of the opposite team become killable.
 def king_moves(index):
     for y in range(3):
@@ -250,7 +250,6 @@ def rook_moves(index):
                         board[positions[0]][positions[1]].killable = True
                     break
     return board
-
 
 
 ## Same as the rook but this time it creates 4 lists for
@@ -299,7 +298,6 @@ def knight_moves(index):
     return board
 
 
-
 WIDTH = 800
 WIN = pg.display.set_mode((WIDTH, WIDTH))
 
@@ -308,13 +306,13 @@ it takes a tuple argument which is the dimensions
 of the window so in this case 800 x 800px
 """
 
-
 pg.display.set_caption("Chess")
 WHITE = (255, 255, 255)
 GREY = (128, 128, 128)
 YELLOW = (204, 204, 0)
 BLUE = (50, 255, 255)
 BLACK = (0, 0, 0)
+
 
 class Node:
     def __init__(self, row, col, width):
@@ -335,11 +333,14 @@ class Node:
             else:
                 WIN.blit(str_order[(self.row, self.col)], (self.x, self.y))
 
+
 """For now it is drawing a rectangle but eventually we are going to need it
         to use blit to draw the chess pieces instead"""
+
+
 def make_grid(rows, width):
     grid = []
-    gap = WIDTH // rows
+    gap = WIDTH // rows #was WIDTH but I changed it
     print(gap)
     for i in range(rows):
         grid.append([])
@@ -404,11 +405,13 @@ def Do_Move(OriginalPos, FinalPosition, WIN):
 def remove_highlight(grid):
     for i in range(len(grid)):
         for j in range(len(grid[0])):
-            if (i+j)%2 == 0:
+            if (i + j) % 2 == 0:
                 grid[i][j].colour = WHITE
             else:
                 grid[i][j].colour = GREY
     return grid
+
+
 """this takes in 2 co-ordinate parameters which you can get as the position of the piece and then the position of the node it is moving to
 you can get those co-ordinates using my old function for swap"""
 
@@ -418,10 +421,10 @@ create_board(board)
 def main(WIN, WIDTH):
     moves = 0
     selected = False
-    piece_to_move=[]
+    piece_to_move = []
     grid = make_grid(8, WIDTH)
     while True:
-        pg.time.delay(50) ##stops cpu dying
+        pg.time.delay(50)  ##stops cpu dying
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()
@@ -434,21 +437,21 @@ def main(WIN, WIDTH):
                 y, x = Find_Node(pos, WIDTH)
                 if selected == False:
                     try:
-                        possible = select_moves((board[x][y]), (x,y), moves)
+                        possible = select_moves((board[x][y]), (x, y), moves)
                         for positions in possible:
                             row, col = positions
                             grid[row][col].colour = BLUE
-                        piece_to_move = x,y
+                        piece_to_move = x, y
                         selected = True
                     except:
                         piece_to_move = []
                         print('Can\'t select')
-                    #print(piece_to_move)
+                    # print(piece_to_move)
 
                 else:
                     try:
                         if board[x][y].killable == True:
-                            row, col = piece_to_move ## coords of original piece
+                            row, col = piece_to_move  ## coords of original piece
                             board[x][y] = board[row][col]
                             board[row][col] = '  '
                             deselect()
@@ -481,5 +484,10 @@ def main(WIN, WIDTH):
             update_display(WIN, grid, 8, WIDTH)
 
 
-if __name__ == '__main__':
-    main(WIN, WIDTH)
+
+main(WIN, WIDTH)
+
+
+#if __name__ == '__main__':
+#    main(WIN, WIDTH)
+
